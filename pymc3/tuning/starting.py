@@ -14,8 +14,10 @@ from inspect import getargspec
 __all__ = ['find_MAP', 'scipyminimize']
 
 
-def find_MAP(start=None, vars=None, fmin=None, return_raw=False,
-             model=None, *args, **kwargs):
+#def find_MAP(start=None, vars=None, fmin=None, return_raw=False,
+#             model=None, *args, **kwargs):
+def find_MAP(*args, start=None, vars=None, fmin=None, return_raw=False,
+             model=None, **kwargs):
     """
     Sets state to the local maximum a posteriori point given a model.
     Current default of fmin_Hessian does not deal well with optimizing close
@@ -45,9 +47,9 @@ def find_MAP(start=None, vars=None, fmin=None, return_raw=False,
     vars = inputvars(vars)
 
     disc_vars = list(typefilter(vars, discrete_types))
-    
+
     disp = model.verbose > 1
-    
+
     if disc_vars and disp:
         print("Warning: vars contains discrete variables. MAP " +
               "estimates may not be accurate for the default " +
@@ -97,7 +99,7 @@ def find_MAP(start=None, vars=None, fmin=None, return_raw=False,
         messages = []
         for var in vars:
 
-            vals = { 
+            vals = {
                 "value"   : mx[var.name],
                 "logp"    : var.logp(mx),
                 "dlogp"   : var.dlogp()(mx) }
@@ -109,7 +111,7 @@ def find_MAP(start=None, vars=None, fmin=None, return_raw=False,
                     idx = np.nonzero(logical_not(isfinite(values)))
                     return name + " bad at idx: " + str(idx) + " with values: " + str(values[idx])
 
-            messages += [ 
+            messages += [
                 message(var.name + "." + k, v)
                 for k,v in vals.items()
                 if not allfinite(v)]
@@ -123,7 +125,7 @@ def find_MAP(start=None, vars=None, fmin=None, return_raw=False,
                          "1) you don't have hierarchical parameters, " +
                          "these will lead to points with infinite " +
                          "density. 2) your distribution logp's are " +
-                         "properly specified. Specific issues: \n" + 
+                         "properly specified. Specific issues: \n" +
                          specific_errors)
     mx = {v.name: mx[v.name].astype(v.dtype) for v in model.vars}
 
